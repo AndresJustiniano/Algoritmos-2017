@@ -1,0 +1,195 @@
+#include "stdafx.h"
+#include <iostream>
+#include "conio.h"
+#include <string>
+#include "stdlib.h"
+
+using namespace std;
+void ALTA_SECUENCIAL(void);
+void LISTADO_SECUENCIAL(void); 
+void CONSULTA_SECUENCIAL(void);
+
+struct tipo_registroCliente{
+	int idCliente;
+	string nombreCliente;
+	int telefonoCliente;
+	string correoCliente;
+	int estadoCliente;
+};
+
+tipo_registroCliente regCliente;
+FILE*ptr;
+
+void main(){
+	{
+	int op;
+	do
+	{
+		cout<<"              MENU          "<<endl;
+		cout<<"(1) Adicionar-Insertar"<<endl;
+		cout<<"(2) Listado"<<endl;
+		cout<<"(3) Consulta"<<endl;
+		cout<<"(0) Salir"<<endl;
+		cout<<endl;
+		cout<<"Ingrese la opcion que desea: ";
+		cin>>op;
+		switch(op){
+			case 1:
+				{
+					ALTA_SECUENCIAL();
+					break;
+				}
+			case 2:
+				{
+					LISTADO_SECUENCIAL();
+					break;
+				}
+			case 3:
+				{
+					CONSULTA_SECUENCIAL();
+					break;
+				}
+			case 0:
+				{
+					cout<<"Salir";
+					break;
+				}
+			default:
+				{
+				}
+		}
+		cout<<endl;
+	}while(op!=0);
+	getch();
+	}
+}
+
+void ALTA_SECUENCIAL(void){
+	int idCliente;
+	cout << "Alta de registro de Clientes. " << endl;
+	ptr = fopen("CLIENTES.dir","rb+");
+	cout << "Ingrese el id del Cliente: ";
+	cin >> idCliente;
+	cin.ignore();	
+	if (ptr==NULL){
+		ptr = fopen("CLIENTES.dir","wb");
+	}
+	fread(&regCliente,sizeof(regCliente),1,ptr);
+	while(!feof(ptr)){
+		if(regCliente.idCliente == idCliente){
+			cout << "El Id ingresado, ya ha sido registrado a otro usuario" << endl;
+			fclose(ptr);
+			getch();
+			return;
+		}
+		fread(&regCliente,sizeof(regCliente),1,ptr);
+	}
+	cin.ignore();
+	cout << "Nombre del Cliente: ";
+	getline(cin,regCliente.nombreCliente);
+	cout << "Telefono del Cliente: ";
+	cin >> regCliente.telefonoCliente;
+	cin.ignore();
+	cout << "Correo del Cliente: ";
+	getline(cin,regCliente.correoCliente);
+	regCliente.idCliente=idCliente;
+	regCliente.estadoCliente = 1;
+	fwrite(&regCliente,sizeof(regCliente),1,ptr);
+	fclose(ptr);
+	cout << "Datos Registrados" << endl;
+	cout << "Oprima Cualquier Boton para Continuar. ";
+	getch();
+	return;
+}
+void LISTADO_SECUENCIAL(void){
+	int c=1;
+	cout << "==================================================================================================" << endl;
+	cout << " Listado de Clientes Registrados en la Base de Datos De Eco-Solver: ";
+	ptr = fopen("CLIENTES.dir","rb+");
+	if (ptr == NULL){
+		cout << "No Existe el Archivo ";
+		cout << "\nPresione Cualquier Boton para continuar. " << endl;
+		return;
+	}
+	cout<< "\n\rID_Cliente         NombreCliente         Telefono           CorreoCliente         "<<endl; 
+	cout << "\n\r----------------------------------------------------------------------------------------------"<<endl; 
+	fread(&regCliente,sizeof(regCliente),1,ptr);
+	while(!feof(ptr)){
+		cout << c << "\t" << regCliente.idCliente << "\t" << regCliente.nombreCliente << "\t" << regCliente.telefonoCliente << "\t" << regCliente.correoCliente << endl;
+		fread(&regCliente,sizeof(regCliente),1,ptr);
+		c++;
+	}
+	fclose(ptr);
+	cout << "\n\r----------------------------------------------------------------------------------------------"; 
+	cout << "\n\rFin del listado !!!"; 
+	cout << "\n\r<<< Oprima cualquier tecla para continuar >>>"; 
+	getch(); 
+	return; 
+}
+void CONSULTA_SECUENCIAL(void){
+	int idClienteBusqueda;
+	cout <<"Consulta Busqueda de Clientes. ";
+	ptr = fopen("CLIENTES.dir","rb");
+	if(ptr == NULL){
+		cout << "El Archivo no Existe";
+		cout << "\nPresione cualquier Boton para continuar." << endl;
+		return;
+	}
+	cout << "Ingrese el id del Cliente a Buscar: ";
+	cin >> idClienteBusqueda;
+	fread(&regCliente,sizeof(regCliente),1,ptr);
+	while(!feof(ptr)){
+		if(idClienteBusqueda == regCliente.idCliente){
+			cout << "Registro Encontrado" << "\t" << regCliente.idCliente << "\t" << regCliente.estadoCliente;
+			fclose(ptr);
+			cout << "\n\r<<< Oprima cualquier tecla para continuar >>>";
+			getch();
+			return; 
+		}
+		fread(&regCliente,sizeof(regCliente),1,ptr);
+	}
+	fclose(ptr);
+	cout << "Presione cualquier boton para Continuar";
+	getch();
+	return;
+}
+
+void MODIFICACION_SECUENCIAL(void){
+	int idClienteBusqueda;
+	cout << "Modificacion de registro de Clientes";
+	ptr = fopen("CLIENTES.dir","rb");
+	if(ptr == NULL){
+		cout << "Archivo inexsistente en la Base de Datos. ";
+		fclose(ptr);
+		cout << "\nOprima cualquier boton para continuar.";
+		getch();
+		return;
+	}
+	cout << "Ingrese el id del Cliente que desea Modificar: ";
+	cin >> idClienteBusqueda;
+	fread(&regCliente,sizeof(regCliente),1,ptr);
+	while(!feof(ptr)){
+		if(regCliente.idCliente == idClienteBusqueda){
+			cout << "\n\n\n\rAnote los nuevos datos ..."; 
+			cout << "\n\rDescripcion: "; cin >> Registro.descrip; 
+			cout << "\n\rCantidad   : "; cin >> Registro.cantidad; 
+			cout << "\n\rPrecio     : "; cin >> Registro.precio; 
+			do{ 
+				cout << "\n\rGarantia   : "; Registro.garantia=toupper(getche()); 
+			}while(Registro.garantia!='S' && Registro.garantia!='N'); 
+		fseek(ptr,ftell(ptr)-sizeof(Registro),SEEK_SET); 
+		fwrite(&Registro,sizeof(Registro),1,alias);  
+		fclose(ptr);
+		cout << "\n\n\n\rRegistro modificado !!!"; 
+		cout << "\n\r<<< Oprima cualquier tecla para continuar >>>"; 
+		getch(); 
+		return; 
+		} 
+		fread(&Registro,sizeof(Registro),1,alias); 
+	} 
+	cout << "\n\rNo se encuentra ese registro !!!"; 
+	fclose(alias); // Cierra el archivo 
+	cout << "\n\r<<< Oprima cualquier tecla para continuar >>>"; 
+	getch(); 
+	return; 
+} 
